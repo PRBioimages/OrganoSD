@@ -1,8 +1,6 @@
 from numpy import random
-
 import torch
 import numpy as np
-
 
 def point_form(boxes):
     """ Convert prior_boxes to (xmin, ymin, xmax, ymax)
@@ -145,9 +143,6 @@ def match1(threshold, truths, priors, variances, loc_t, conf_t, idx):
     conf_t[idx] = torch.from_numpy(conf).squeeze(1)  # [num_priors] top class label for each prior
 
 
-
-
-
 def random_n(index, n):
     idx = np.arange(0, index.size(0), dtype = np.uint16)
     idx = idx[index]
@@ -159,9 +154,6 @@ def random_n(index, n):
     idx_ = np.arange(0, index.size(0), dtype=np.uint16)
     idx_ = idx_[index]
     return index
-
-
-
 
 
 
