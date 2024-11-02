@@ -1,0 +1,141 @@
+#Albumentations 库的版本号为 0.5.2
+__version__: 0.5.2
+
+# 数据增强的具体配置开始
+transform:
+  __class_fullname__: albumentations.core.composition.Compose
+  additional_targets: {}
+  bbox_params: null
+  keypoint_params: null
+  #数据增强的概率，这里为 1.0，表示始终应用增强
+  p: 1.0
+
+  #具体的数据增强操作，将按照指定的概率应用在图像
+  transforms:
+  #图像大小调整
+  - __class_fullname__: albumentations.augmentations.transforms.Resize
+    always_apply: false
+    height: 96
+    interpolation: 1  #指定了用于调整图像大小的插值方法。值 1 表示双线性插值
+    p: 1
+    width: 96
+  - __class_fullname__: albumentations.augmentations.transforms.HorizontalFlip
+    always_apply: false
+    p: 0.5
+  - __class_fullname__: albumentations.augmentations.transforms.VerticalFlip
+    always_apply: false
+    p: 0.5
+  - __class_fullname__: albumentations.augmentations.transforms.Transpose #矩阵或数组的转置操作,可以用来实现图像的旋转90度、180度或270度等
+    always_apply: false
+    p: 0.5
+
+    #平移、缩放和旋转操作
+  - __class_fullname__: albumentations.augmentations.transforms.ShiftScaleRotate
+    always_apply: false
+    border_mode: 2 #处理边界的模式,2，表示采用恒定的外边界填充，不会在边界处产生新的像素值
+    interpolation: 1 #双线性插值
+    mask_value: null
+    p: 0.5
+    rotate_limit: #随机旋转的角度范围
+    - -45
+    - 45
+    scale_limit: #随机缩放的比例范围
+    - -0.3
+    - 0.3
+    shift_limit_x: #在水平和垂直方向上随机平移的范围
+    - -0.06
+    - 0.06
+    shift_limit_y:
+    - -0.06
+    - 0.06
+    value: null
+#  - __class_fullname__: albumentations.augmentations.transforms.HueSaturationValue
+#    always_apply: false
+#    hue_shift_limit:
+#    - -0.2
+#    - 0.2
+#    p: 0.5
+#    sat_shift_limit:
+#    - -0.2
+#    - 0.2
+#    val_shift_limit:
+#    - -0.2
+#    - 0.2
+
+  #随机调整亮度和对比度
+  - __class_fullname__: albumentations.augmentations.transforms.RandomBrightnessContrast
+    always_apply: false
+    brightness_by_max: true #采用相对于亮度的最大值的方式进行调整
+    brightness_limit:
+    - -0.1
+    - 0.1
+    contrast_limit:
+    - -0.1
+    - 0.1
+    p: 0
+
+    #组合操作，表示从一组变形增强中选择一个应用:光学失真、网格失真和弹性变换
+  - __class_fullname__: albumentations.core.composition.OneOf
+    p: 0.5
+    transforms:
+    - __class_fullname__: albumentations.augmentations.transforms.OpticalDistortion
+      always_apply: false
+      border_mode: 4
+      distort_limit:
+      - -1.0
+      - 1.0
+      interpolation: 1
+      mask_value: null
+      p: 0.5
+      shift_limit:
+      - -0.05
+      - 0.05
+      value: null
+    - __class_fullname__: albumentations.augmentations.transforms.GridDistortion
+      always_apply: false
+      border_mode: 4
+      distort_limit:
+      - -1.0
+      - 1.0
+      interpolation: 1
+      mask_value: null
+      num_steps: 5
+      p: 0.5
+      value: null
+    - __class_fullname__: albumentations.augmentations.transforms.ElasticTransform
+      alpha: 3
+      alpha_affine: 50
+      always_apply: false
+      approximate: false
+      border_mode: 4
+      interpolation: 1
+      mask_value: null
+      p: 0.5
+      sigma: 50
+      value: null
+
+      #对比度有限的自适应直方图均衡化
+#  - __class_fullname__: albumentations.augmentations.transforms.CLAHE
+#    always_apply: false
+#    clip_limit:
+#    - 1
+#    - 4.0
+#    p: 0.2
+#    tile_grid_size:
+#    - 8
+#    - 8
+
+  #均衡化,增强图像对比度
+  - __class_fullname__: albumentations.augmentations.transforms.Equalize
+    always_apply: false
+    by_channels: true
+    mode: cv
+    p: 0
+
+    #遮挡,增加数据多样性
+  - __class_fullname__: albumentations.augmentations.transforms.Cutout
+    always_apply: false
+    max_h_size: 84
+    max_w_size: 84
+    num_holes: 1
+    p: 0
